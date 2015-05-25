@@ -1,4 +1,8 @@
-﻿using DemoSalesforceMobileSDK.Views;
+﻿using DemoSalesforceMobileSDK.Models;
+using DemoSalesforceMobileSDK.Views;
+using Salesforce.SDK.App;
+using Salesforce.SDK.Auth;
+using Salesforce.SDK.Source.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +28,7 @@ namespace DemoSalesforceMobileSDK
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App : Application
+    public sealed partial class App : SalesforceApplication
     {
 #if WINDOWS_PHONE_APP
         private TransitionCollection transitions;
@@ -35,6 +39,7 @@ namespace DemoSalesforceMobileSDK
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
+            : base()
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
@@ -133,6 +138,26 @@ namespace DemoSalesforceMobileSDK
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+
+        /// <summary>
+        /// If you wish to roll your own EncryptionSettings, this would be the place to initialize it. 
+        /// </summary>
+        /// <returns></returns>
+        protected override void InitializeConfig()
+        {
+            var config = SDKManager.InitializeConfig<Config>(new EncryptionSettings(new HmacSHA256KeyGenerator()));
+            config.SaveConfig();
+        }
+
+        /// <summary>
+        /// This returns the root application of your application. Please adjust to match your actual root page if you use something different.
+        /// </summary>
+        /// <returns></returns>
+        protected override Type SetRootApplicationPage()
+        {
+            return typeof(MainPage);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.props" Condition="Exists('..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -15,6 +16,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SynthesizeLinkMetadata>true</SynthesizeLinkMetadata>
+    <NuGetPackageImportStamp>5508b382</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -80,9 +82,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +97,23 @@
     <Content Include="Assets\StoreLogo.scale-240.png" />
     <Content Include="Assets\WideLogo.scale-240.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Salesforce.SDK.App">
+      <HintPath>..\..\packages\Salesforce.SDK.Core.3.2.1\lib\wpa\Salesforce.SDK.App.dll</HintPath>
+    </Reference>
+    <Reference Include="Salesforce.SDK.Core">
+      <HintPath>..\..\packages\Salesforce.SDK.Core.3.2.1\lib\wpa\Salesforce.SDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Salesforce.SDK.Phone">
+      <HintPath>..\..\packages\Salesforce.SDK.Core.3.2.1\lib\wpa\Salesforce.SDK.Phone.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
@@ -106,6 +122,14 @@
   </PropertyGroup>
   <Import Project="..\DemoSalesforceMobileSDK.Shared\DemoSalesforceMobileSDK.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.props'))" />
+    <Error Condition="!Exists('..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.targets'))" />
+  </Target>
+  <Import Project="..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.targets" Condition="Exists('..\..\packages\Salesforce.SDK.Core.3.2.1\build\wpa\Salesforce.SDK.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
