@@ -13,7 +13,7 @@
     </UserControl.Resources>
 
     <Grid x:Name="grid">
-        <ListView  x:Name ="contactList" ItemsSource="{Binding}" HorizontalAlignment="Center" Padding="0,18,0,0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+        <ListView x:Name ="contactList" ItemsSource="{Binding}" HorizontalAlignment="Center" Padding="0,18,0,0" ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionChanged="contactList_SelectionChanged">
             <ListView.HeaderTemplate>
                 <DataTemplate>
                     <TextBlock Text="Contact List" Style="{StaticResource HeaderTextBlockStyle}" HorizontalAlignment="Center" Foreground="White"></TextBlock>
@@ -21,11 +21,34 @@
             </ListView.HeaderTemplate>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" Foreground="White" FontSize="21" HorizontalAlignment="Center" Width="Auto"/>
+                    <StackPanel>
+                        <TextBlock Text="{Binding [Id]}" Foreground="White" FontSize="20" HorizontalAlignment="Center" Width="Auto"/>
+                        <TextBlock Text="" Foreground="White" FontSize="21" HorizontalAlignment="Center" Width="Auto">
+                        <Run Text="{Binding [FirstName]}"/>
+                        <Run Text="{Binding [LastName]}"/>
+                        </TextBlock>
+                    </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Popup x:Name="popup" DataContext="{Binding}" IsLightDismissEnabled="True" HorizontalAlignment="Stretch" Margin="50">
+            <Grid Background="White" RequestedTheme="Light" HorizontalAlignment="Stretch" Width="200" VerticalAlignment="Center" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Text="{Binding [Id]}" IsEnabled="False" FontSize="21" HorizontalAlignment="Stretch" Width="Auto"/>
+                <TextBox Grid.Row="1" x:Name="first" Text="{Binding [FirstName],Mode=TwoWay}" FontSize="21" HorizontalAlignment="Stretch" Width="Auto"/>
+                <TextBox Grid.Row="2" x:Name="last" Text="{Binding [LastName],Mode=TwoWay}" FontSize="21" HorizontalAlignment="Stretch" Width="Auto"/>
+                <Button Grid.Row="3" Content="Save" HorizontalAlignment="Stretch" Click="Button_Click"/>
+            </Grid>
+        </Popup>
+
     </Grid>
+
 
     <Page.BottomAppBar>
         <CommandBar x:Name="controlBar">
@@ -45,5 +68,5 @@
             </AppBarButton>
         </CommandBar>
     </Page.BottomAppBar>
-    
+
 </native:NativeMainPage>

@@ -31,6 +31,13 @@ namespace DemoSalesforceMobileSDK.Views
     /// </summary>
     public sealed partial class MainPage : NativeMainPage
     {
+        private ObservableCollection<JObject> _sobjects = new ObservableCollection<JObject>();
+        public ObservableCollection<JObject> Sobjects
+        {
+            get { return _sobjects; }
+        }
+
+
         private ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
 
         public ObservableCollection<Contact> Contacts
@@ -56,8 +63,8 @@ namespace DemoSalesforceMobileSDK.Views
                 try
                 {
                     account = await OAuth2.RefreshAuthToken(account);
-                    _contacts = await SendRequest("SELECT Name FROM Contact");
-                    contactList.DataContext = Contacts;
+                    _sobjects = await SendRequest("SELECT Id,FirstName,LastName FROM Contact");
+                    contactList.DataContext = _sobjects;
                 }
                 catch (OAuthException ex)
                 {
@@ -86,7 +93,7 @@ namespace DemoSalesforceMobileSDK.Views
             AccountManager.SwitchAccount();
         }
 
-        private async Task<ObservableCollection<Contact>> SendRequest(string soql)
+        private async Task<ObservableCollection<JObject>> SendRequest(string soql)
         {
             var restRequest = RestRequest.GetRequestForQuery(ApiVersionStrings.VersionNumber, soql);
             var client = SDKManager.GlobalClientManager.GetRestClient() ??
@@ -97,12 +104,40 @@ namespace DemoSalesforceMobileSDK.Views
                 return null;
             }
             var records = response.AsJObject.GetValue("records").ToObject<JArray>();
-            foreach (var item in records)
+            foreach (var item in records.ToList())
             {
-                _contacts.Add(new Contact { Name = item.Value<string>("Name") });
+                _sobjects.Add(item.ToObject<JObject>());
             }
-
-            return _contacts;
+            return _sobjects;
         }
+
+        public async Task<bool> UpdateOnServer(String objectType, String objectId, Dictionary<String, Object> fields)
+        {
+            var request = RestRequest.GetRequestForUpdate(ApiVersionStrings.VersionNumber, objectType, objectId, fields);
+            var client = SDKManager.GlobalClientManager.GetRestClient() ??
+                        new RestClient(AccountManager.GetAccount().InstanceUrl);
+            var response = await client.SendAsync(request);
+
+            return response.Success;
+        }
+
+        private void contactList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            popup.DataContext = e.AddedItems.First();
+            popup.IsOpen = true;
+
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            JObject data = (JObject)popup.DataContext;
+            Dictionary<String, Object> fields = new Dictionary<string, object>();
+            fields.Add("FirstName", first.Text);
+            fields.Add("LastName", last.Text);
+            var id = data["Id"].ToString();
+            var res = await UpdateOnServer("Contact",id , fields);
+            popup.IsOpen = false;
+        }
+
     }
 }
